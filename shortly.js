@@ -23,24 +23,53 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 
-app.get('/', 
+app.get('/',
 function(req, res) {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create',
 function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links',
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
 });
 
-app.post('/links', 
+
+app.get('/signup',
+function(req, res) {
+  res.render('signup');
+});
+
+app.post('/signup', function(req, res){
+
+  console.log("THIS IS REQ.BODY"+JSON.stringify(req.body));
+
+  db.knex('users').insert({username: req.body.username})
+
+  db.knex('users').select().then(function(data){
+    console.log(data)
+  })
+
+  console.log("NOT BROKEN")
+
+
+
+
+
+
+
+})
+
+
+
+
+app.post('/links',
 function(req, res) {
   var uri = req.body.url;
 
