@@ -59,6 +59,24 @@ function(req, res) {
   res.render('login');
 });
 
+app.post('/login',
+  function(req,res){
+    db.knex('users')
+      .where('username', '=', req.body.username)
+      .where('password', '=', req.body.password)
+      .then(function(queryRes){
+        if (queryRes[0]) {
+          req.session.regenerate(function(){
+          req.session.username = req.body.username;
+            })
+          res.redirect(302, '/');
+          } else {
+            res.redirect('/login');
+          }
+         })
+        }
+      );
+
 app.get('/links',
 function(req, res) {
   console.log("REQ.SESSION FOR LINKS LOOKS LIKE THIS: " + JSON.stringify(req.session))
