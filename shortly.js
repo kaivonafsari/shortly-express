@@ -12,6 +12,7 @@ var Link = require('./app/models/link');
 var Click = require('./app/models/click');
 
 var app = express();
+var session = require('express-session');
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -22,23 +23,56 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+app.use(session({
+  // genid: function(req) {
+  //   return genuuid() // use UUIDs for session IDs
+  // },
+  secret: 'Oski'
+}))
 
+//when user attempts to visit main page
+//check if session is valid
+//if valid
+  //res.render('index')
+//if not redirect to login
 
 app.get('/',
 function(req, res) {
-  res.render('index');
+  if (req.session.user) {
+    res.render('index');
+  } else {
+    req.session.error = 'Access denied!';
+    res.redirect('/login');
+  }
 });
 
 app.get('/create',
 function(req, res) {
-  res.render('index');
+  console.log("REQ.SESSION FOR CREATE LOOKS LIKE THIS: " + JSON.stringify(req.session))
+  if (req.session.user) {
+    res.render('index');
+  } else {
+    req.session.error = 'Access denied!';
+    res.redirect('/login');
+  }
+});
+
+app.get('/login',
+function(req, res) {
+  res.render('login');
 });
 
 app.get('/links',
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
+  console.log("REQ.SESSION FOR LINKS LOOKS LIKE THIS: " + JSON.stringify(req.session))
+  if (req.session.user) {
     res.send(200, links.models);
-  });
+    Links.reset().fetch().then(function(links) {
+  })
+} else {
+  req.session.error = 'Access denied!';
+  res.redirect('/login');
+}
 });
 
 
@@ -47,23 +81,22 @@ function(req, res) {
   res.render('signup');
 });
 
+
+
 app.post('/signup', function(req, res){
-  console.log("GETS HERE 111111111111")
   var thisUsername = req.body.username;
 
   new User({username: thisUsername}).fetch().then(function(found){
     if (found) {
       res.send(201, found.attributes);
     } else {
-  console.log("GETS HERE 22222222222")
 
         var user = new User({username: thisUsername})
         console.log(user)
 
         user.save().then(function(newUser){
           Users.add(newUser);
-            console.log("GETS HERE 333333333")
-
+          res.setHeader("location", "/")
           res.send(201, newUser)
           })
 

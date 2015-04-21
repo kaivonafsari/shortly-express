@@ -204,6 +204,7 @@ describe('', function() {
         };
 
         requestWithSession(options, function(error, res, body) {
+          console.log("RESPOSNE LOOKS LIKE: " + JSON.stringify(res))
           expect(body).to.include('"title":"Rofl Zoo - Daily funny animal pictures"');
           expect(body).to.include('"code":"' + link.get('code') + '"');
           done();
@@ -214,7 +215,7 @@ describe('', function() {
 
   }); // 'Link creation'
 
-  xdescribe('Priviledged Access:', function(){
+  describe('Priviledged Access:', function(){
 
     it('Redirects to login page if a user tries to access the main page and is not signed in', function(done) {
       request('http://127.0.0.1:4568/', function(error, res, body) {
@@ -288,6 +289,7 @@ describe('', function() {
       };
 
       request(options, function(error, res, body) {
+        console.log("res.headers: " + JSON.stringify(res.headers))
         expect(res.headers.location).to.equal('/');
         done();
       });
