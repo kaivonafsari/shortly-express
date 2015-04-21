@@ -2,6 +2,7 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var bcrypt = require('bcrypt-nodejs');
 
 
 var db = require('./app/config');
@@ -104,6 +105,7 @@ app.post('/signup', function(req, res){
     if (found) {
       res.send(201, found.attributes);
     } else {
+
 
         var user = new User({username: thisUsername, password:req.body.password})
         console.log(user)
