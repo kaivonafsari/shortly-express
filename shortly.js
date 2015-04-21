@@ -23,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 
+
 app.get('/',
 function(req, res) {
   res.render('index');
@@ -47,26 +48,32 @@ function(req, res) {
 });
 
 app.post('/signup', function(req, res){
+  console.log("GETS HERE 111111111111")
+  var thisUsername = req.body.username;
 
-  console.log("THIS IS REQ.BODY"+JSON.stringify(req.body));
+  new User({username: thisUsername}).fetch().then(function(found){
+    if (found) {
+      res.send(201, found.attributes);
+    } else {
+  console.log("GETS HERE 22222222222")
 
-  db.knex('users').insert({username: req.body.username})
+        var user = new User({username: thisUsername})
+        console.log(user)
 
-  db.knex('users').select().then(function(data){
-    console.log(data)
+        user.save().then(function(newUser){
+          Users.add(newUser);
+            console.log("GETS HERE 333333333")
+
+          res.send(201, newUser)
+          })
+
+        }
+
+    })
   })
 
-  console.log("NOT BROKEN")
 
-
-
-
-
-
-
-})
-
-
+//})
 
 
 app.post('/links',

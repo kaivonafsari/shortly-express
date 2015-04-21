@@ -95,6 +95,8 @@ describe('', function() {
 
       requestWithSession(options, function(error, res, body) {
         // res comes from the request module, and may not follow express conventions
+        console.log("options: " + JSON.stringify(options))
+        console.log("THIS SHOULD BE RES "+res);
         expect(res.statusCode).to.equal(404);
         done();
       });
@@ -238,6 +240,7 @@ describe('', function() {
   }); // 'Priviledged Access'
 
   describe('Account Creation:', function(){
+        console.log("GETS HERE 444444444444")
 
     it('Signup creates a user record', function(done) {
       var options = {
@@ -249,10 +252,16 @@ describe('', function() {
         }
       };
 
+
+      db.knex('users').select().then(function(data){
+        console.log(data)
+      })
+
       request(options, function(error, res, body) {
         db.knex('users')
           .where('username', '=', 'Svnh')
           .then(function(res) {
+            console.log("RESPONSE HEEEEERE: " + res)
             if (res[0] && res[0]['username']) {
               var user = res[0]['username'];
             }
@@ -266,6 +275,7 @@ describe('', function() {
           });
       });
     });
+        console.log("GETS HERE 666666666666666")
 
     it('Signup logs in a new user', function(done) {
       var options = {
