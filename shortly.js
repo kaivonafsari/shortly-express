@@ -24,9 +24,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 app.use(session({
-  // genid: function(req) {
-  //   return genuuid() // use UUIDs for session IDs
-  // },
   secret: 'Oski'
 }))
 
@@ -85,19 +82,23 @@ function(req, res) {
 
 app.post('/signup', function(req, res){
   var thisUsername = req.body.username;
+  console.log("req.body: " + req.body)
 
-  new User({username: thisUsername}).fetch().then(function(found){
+  new User({username: thisUsername, password: req.body.password}).fetch().then(function(found){
     if (found) {
       res.send(201, found.attributes);
     } else {
 
-        var user = new User({username: thisUsername})
+        var user = new User({username: thisUsername, password:req.body.password})
         console.log(user)
 
         user.save().then(function(newUser){
           Users.add(newUser);
-          res.setHeader("location", "/")
-          res.send(201, newUser)
+          //LOG THEM IN
+          req.session.regenerate(function(){
+          req.session.username = thisUsername;
+            })
+          res.redirect(302, '/');
           })
 
         }

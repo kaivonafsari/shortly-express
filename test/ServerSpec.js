@@ -59,11 +59,11 @@ describe('', function() {
       });
   });
 
-  describe('Link creation:', function(){
+  xdescribe('Link creation:', function(){
 
     var requestWithSession = request.defaults({jar: true});
 
-    xbeforeEach(function(done){      // create a user that we can then log-in with
+    beforeEach(function(done){      // create a user that we can then log-in with
       new User({
           'username': 'Phillip',
           'password': 'Phillip'
@@ -215,7 +215,7 @@ describe('', function() {
 
   }); // 'Link creation'
 
-  describe('Priviledged Access:', function(){
+  xdescribe('Priviledged Access:', function(){
 
     it('Redirects to login page if a user tries to access the main page and is not signed in', function(done) {
       request('http://127.0.0.1:4568/', function(error, res, body) {
@@ -240,7 +240,7 @@ describe('', function() {
 
   }); // 'Priviledged Access'
 
-  describe('Account Creation:', function(){
+  xdescribe('Account Creation:', function(){
         console.log("GETS HERE 444444444444")
 
     it('Signup creates a user record', function(done) {
@@ -297,7 +297,7 @@ describe('', function() {
 
   }); // 'Account Creation'
 
-  xdescribe('Account Login:', function(){
+  describe('Account Login:', function(){
 
     var requestWithSession = request.defaults({jar: true});
 
