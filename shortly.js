@@ -27,17 +27,17 @@ app.use(session({
   secret: 'Oski'
 }))
 
-//when user attempts to visit main page
-//check if session is valid
-//if valid
-  //res.render('index')
-//if not redirect to login
 
 app.get('/',
 function(req, res) {
+            console.log(!!req.session.user)
+
   if (req.session.user) {
     res.render('index');
+
+    console.log("GET REQUEST FOR HOMEPAGE WORKS, SESSION WORKS")
   } else {
+    console.log("GET REQUEST DOESNT WORK B/C SESSION ISN'T RECOGNIZED")
     req.session.error = 'Access denied!';
     res.redirect('/login');
   }
@@ -45,7 +45,6 @@ function(req, res) {
 
 app.get('/create',
 function(req, res) {
-  console.log("REQ.SESSION FOR CREATE LOOKS LIKE THIS: " + JSON.stringify(req.session))
   if (req.session.user) {
     res.render('index');
   } else {
@@ -67,9 +66,9 @@ app.post('/login',
       .then(function(queryRes){
         if (queryRes[0]) {
           req.session.regenerate(function(){
-          req.session.username = req.body.username;
-            })
+          req.session.user = queryRes[0].username;
           res.redirect(302, '/');
+            })
           } else {
             res.redirect('/login');
           }
@@ -79,10 +78,9 @@ app.post('/login',
 
 app.get('/links',
 function(req, res) {
-  console.log("REQ.SESSION FOR LINKS LOOKS LIKE THIS: " + JSON.stringify(req.session))
   if (req.session.user) {
-    res.send(200, links.models);
     Links.reset().fetch().then(function(links) {
+      res.send(200, links.models);
   })
 } else {
   req.session.error = 'Access denied!';
