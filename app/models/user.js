@@ -27,7 +27,7 @@ hashPassword: function(){
         this.set('password', hash);
       });
   }
-}
+})
 
 module.exports = User;
 

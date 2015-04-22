@@ -61,21 +61,41 @@ function(req, res) {
 
 app.post('/login',
   function(req,res){
-    db.knex('users')
-      .where('username', '=', req.body.username)
-      .where('password', '=', req.body.password)
-      .then(function(queryRes){
-        if (queryRes[0]) {
-          req.session.regenerate(function(){
-          req.session.user = queryRes[0].username;
-          res.redirect(302, '/');
+
+    new User({username:req.body.username}).fetch().then(function(user){
+      if(!user){
+        res.redirect('/login');
+      } else{
+
+        user.comparePassword(req.body.password, function(match){
+          if(match) {
+            console.log("PASSWORD IS A MATCH!!!!!!!")
+            req.session.regenerate(function(){
+              req.session.user = req.body.user;
+              res.redirect('/');
             })
           } else {
             res.redirect('/login');
           }
-         })
-        }
-      );
+        })
+      }
+    })
+  })
+    // db.knex('users')
+    //   .where('username', '=', req.body.username)
+    //   .where('password', '=', req.body.password)
+    //   .then(function(queryRes){
+    //     if (queryRes[0]) {
+    //       req.session.regenerate(function(){
+    //       req.session.user = queryRes[0].username;
+    //       res.redirect(302, '/');
+    //         })
+    //       } else {
+    //         res.redirect('/login');
+    //       }
+    //      })
+    //     }
+
 
 app.get('/links',
 function(req, res) {
@@ -101,22 +121,23 @@ app.post('/signup', function(req, res){
   var thisUsername = req.body.username;
   console.log("req.body: " + req.body)
 
-  new User({username: thisUsername, password: req.body.password}).fetch().then(function(found){
+  new User({username: thisUsername}).fetch().then(function(found){
     if (found) {
-      res.send(201, found.attributes);
+       console.log('Account already exists');
+       res.redirect('/signup');
     } else {
 
 
         var user = new User({username: thisUsername, password:req.body.password})
-        console.log(user)
 
         user.save().then(function(newUser){
           Users.add(newUser);
           //LOG THEM IN
           req.session.regenerate(function(){
-          req.session.username = thisUsername;
-            })
+          req.session.user = thisUsername;
           res.redirect(302, '/');
+            })
+          console.log("req.session.user is falsy or no? " + req.session.user)
           })
 
         }
